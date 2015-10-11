@@ -1,3 +1,5 @@
+import Base: getindex, setindex
+
 # Fields
 
 type Field{K} end
@@ -55,12 +57,18 @@ end
 
 Base.copy{I}(d::TypedDict{I}) = TypedDict{I}(copy(d.values))
 
-@generated function Base.getindex{I, K}(d::TypedDict{I}, f::Field{K})
+@generated function getindex{I, K}(d::TypedDict{I}, f::Field{K})
   T = typeinfo[I][K]
   :(d.values[K]::$T)
 end
 
-Base.getindex(d::TypedDict, f::Symbol) = d.values[f]
+getindex(d::TypedDict, f::Symbol) = d.values[f]
+
+@generated function getindex{N}(d::TypedDict, fs::NTuple{N, Field})
+  Expr(:tuple, map(f -> :(d[$f()]), fs.parameters)...)
+end
+
+getindex(d::TypedDict, fs::NTuple) = map(f -> d[f], fs)
 
 @generated function assoc{I, K}(d::TypedDict{I}, f::Field{K}, v)
   I′ = storeinfo(merge(typeinfo[I], Dict(K => v)))
