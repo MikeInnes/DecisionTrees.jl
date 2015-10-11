@@ -1,4 +1,4 @@
-import Base: getindex, setindex
+import Base: getindex
 
 # Fields
 
@@ -65,7 +65,7 @@ end
 getindex(d::TypedDict, f::Symbol) = d.values[f]
 
 @generated function getindex{N}(d::TypedDict, fs::NTuple{N, Field})
-  Expr(:tuple, map(f -> :(d[$f()]), fs.parameters)...)
+  :($(map(f -> :(d[$f()]), fs.parameters)...,))
 end
 
 getindex(d::TypedDict, fs::NTuple) = map(f -> d[f], fs)
