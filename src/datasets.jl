@@ -20,6 +20,9 @@ getindex(d::DataSet, col::Column, i) = d[col][i]
 getindex(d::DataSet, cols::Tuple) =
   collect(zip(d.data[cols]...))
 
-Base.names(d::DataSet) = d.cols
-columns(d::DataSet) = map(c -> d[c], names(d))
+getindex{I, T<:Integer}(d::DataSet{I}, rows::UnitRange{T}) =
+  DataSet(names(d), TypedDict{I}(Dict([k => typeof(v)(v[rows]) for (k, v) in d.data])))
+
+Base.names(d::DataSet) = copy(d.cols)
+columns(d::DataSet) = map(c -> d[c], d.cols)
 Base.length(d::DataSet) = length(columns(d)[1])
