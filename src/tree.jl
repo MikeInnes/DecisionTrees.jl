@@ -8,15 +8,13 @@ isright(args...) = !isleft(args...)
 
 isleft(::Continuous, x, z) = x ≤ z
 
-isleft(::Ordinal, x, z) = x ≤ z
-
 isleft(::Categorical, x, z) = x == z
 
 function split(xs, ys, z)
   left = eltype(ys)[]
   right = eltype(ys)[]
   for (i, x) in enumerate(xs)
-    push!(isleft(vartype(eltype(xs)), x, z) ? left : right, ys[i])
+    push!(isleft(vareltype(xs), x, z) ? left : right, ys[i])
   end
   return left, right
 end
@@ -29,7 +27,7 @@ function score(xs, ys, z)
 end
 
 function bestsplit(xs, ys)
-  best, imp = first(xs), 0.
+  best, imp = first(xs), -Inf
   for x in unique(xs)
     if (i = score(xs, ys, x)) > imp
       best = x
@@ -41,9 +39,9 @@ end
 
 function bestsplit(data::DataSet, y)
   ys = data[y]
-  col, z, score = :nothing, nothing, 0.
+  col, z, score = nothing, nothing, -Inf
   for name in names(data)
-    name == Symbol(y) && break
+    name == Symbol(y) && continue
     z′, score′ = bestsplit(data[name], ys)
     score′ > score && ((col, z, score) = (name, z′, score′))
   end
@@ -70,14 +68,21 @@ isleaf(b::Branch) = b.col == leaf
 
 isstop(data) = length(data) ≤ 10
 
+final(xs) = final(vareltype(xs), xs)
+
+final(::Categorical, xs) = mode(xs)
+
+final(::Continuous, xs) = mean(xs)
+
 function tree(data, y)
   isstop(data) && @goto leaf
   col, val, imp = bestsplit(data, y)
   imp ≤ 0 && @goto leaf
   left, right = split(data, col, val)
   return Branch(col, val, tree(left, y), tree(right, y))
+
   @label leaf
-  return Leaf(mode(data[y]))
+  return Leaf(final(data[y]))
 end
 
 function classify(data::DataSet, tree::Branch, row::Integer)
