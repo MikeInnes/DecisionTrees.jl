@@ -21,7 +21,7 @@ function split(xs, ys, z)
   return left, right
 end
 
-split(xs, z) = split(xs, 1:length(xs), z)
+split(xs, z) = split(xs, 1:length(xs), z)::NTuple{2, Vector{Int}}
 
 function score(xs, ys, z)
   left, right = split(xs, ys, z)
@@ -38,3 +38,38 @@ function bestsplit(xs, ys)
   end
   return best, imp
 end
+
+function bestsplit(data::DataSet, y)
+  ys = data[y]
+  col, z, score = :nothing, nothing, 0.
+  for name in names(data)
+    name == Symbol(y) && break
+    z′, score′ = bestsplit(data[name], ys)
+    score′ > score && ((col, z, score) = (name, z′, score′))
+  end
+  return col, z, score
+end
+
+function split(data::DataSet, x, z)
+  left, right = split(data[x], z)
+  return data[left], data[right]
+end
+
+immutable Branch
+  col::Symbol
+  val
+  left::Nullable{Branch}
+  right::Nullable{Branch}
+end
+
+isstop(data) = length(data) < 10
+
+function tree(data, y)
+  isstop(data) && return
+  col, val, imp = bestsplit(data, y)
+  imp ≤ 0 && return
+  left, right = split(data, col, val)
+  return Branch(col, val, tree(left, y), tree(right, y))
+end
+
+@time tree(data, f"Species")
