@@ -11,3 +11,5 @@ function class_act(data, y)
   t = tree(train, y)
   accuracy(test, y, t)
 end
+
+class_act(data, :Species)
