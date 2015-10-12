@@ -62,14 +62,35 @@ immutable Branch
   right::Nullable{Branch}
 end
 
-isstop(data) = length(data) < 10
+@gensym leaf
+
+Leaf(val) = Branch(leaf, val, nothing, nothing)
+
+isleaf(b::Branch) = b.col == leaf
+
+isstop(data) = length(data) ≤ 10
 
 function tree(data, y)
-  isstop(data) && return
+  isstop(data) && @goto leaf
   col, val, imp = bestsplit(data, y)
-  imp ≤ 0 && return
+  imp ≤ 0 && @goto leaf
   left, right = split(data, col, val)
   return Branch(col, val, tree(left, y), tree(right, y))
+  @label leaf
+  return Leaf(mode(data[y]))
 end
 
-@time tree(data, f"Species")
+function classify(data::DataSet, tree::Branch, row::Integer)
+  isleaf(tree) && return tree.val
+  next = get(isleft(data[tree.col, row], tree.val) ? tree.left : tree.right)
+  return classify(data::DataSet, next, row)
+end
+
+classify(data::DataSet, tree::Branch) =
+  map(row -> classify(data, tree, row), 1:length(data))
+
+function accuracy(data::DataSet, y, tree::Branch)
+  labels = classify(data, tree)
+  ys = data[y]
+  sum(ys .== labels) / length(labels)
+end
