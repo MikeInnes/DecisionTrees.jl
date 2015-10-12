@@ -92,9 +92,7 @@ macro forward(ex, fs)
   @capture(ex, T_.field_) || error("Syntax: @forward T.f f, g, h")
   T = esc(T)
   fs = map(esc, fs.args)
-  quote
-    $([:($f(x::$T, args...) = $f(x.$field, args...)) for f in fs]...)
-  end
+  :($([:($f(x::$T, args...) = $f(x.$field, args...)) for f in fs]...);nothing)
 end
 
 @forward TypedDict.values Base.start, Base.next, Base.done
