@@ -26,9 +26,11 @@ function score(xs, ys, z)
   improvement(ys, left, right)
 end
 
+splitters(xs) = unique(xs)
+
 function bestsplit(xs, ys)
   best, imp = first(xs), -Inf
-  for x in unique(xs)
+  for x in splitters(xs)
     if (i = score(xs, ys, x)) > imp
       best = x
       imp = i
