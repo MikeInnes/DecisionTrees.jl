@@ -26,7 +26,13 @@ function score(xs, ys, z)
   improvement(ys, left, right)
 end
 
-splitters(xs) = unique(xs)
+splitters(xs) = splitters(vareltype(xs), xs)
+
+splitters(::Categorical, xs) = unique(xs)
+
+groups(i, n = 10) = (g = i/(n+1); [round(Int, x) for x in g:g:n*g])
+
+splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
 
 function bestsplit(xs, ys)
   best, imp = first(xs), -Inf
