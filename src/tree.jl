@@ -68,13 +68,16 @@ end
   right::Nullable{Branch}
 end
 
+left(b::Branch) = get(b.left)
+right(b::Branch) = get(b.right)
+
 @gensym leaf
 
 Leaf(val) = Branch(leaf, val, nothing, nothing)
 
 isleaf(b::Branch) = b.col == leaf
 
-isstop(data) = length(data) ≤ 10
+isstop(ys) = length(ys) ≤ 100
 
 final(xs) = final(vareltype(xs), xs)
 
@@ -83,7 +86,7 @@ final(::Categorical, xs) = mode(xs)
 final(::Continuous, xs) = mean(xs)
 
 function tree(data, y)
-  isstop(data) && @goto leaf
+  isstop(data[y]) && @goto leaf
   col, val, imp = bestsplit(data, y)
   imp ≤ 0 && @goto leaf
   left, right = split(data, col, val)
@@ -95,7 +98,7 @@ end
 
 function classify(data::DataSet, tree::Branch, row::Integer)
   isleaf(tree) && return tree.val
-  next = get(isleft(data[tree.col, row], tree.val) ? tree.left : tree.right)
+  next = isleft(data[tree.col, row], tree.val) ? left(tree) : right(tree)
   return classify(data::DataSet, next, row)
 end
 
@@ -107,3 +110,5 @@ function accuracy(data::DataSet, y, tree::Branch)
   ys = data[y]
   sum(ys .== labels) / length(labels)
 end
+
+depth(b::Branch) = isleaf(b) ? 1 : 1 + max(depth(left(b)), depth(right(b)))
