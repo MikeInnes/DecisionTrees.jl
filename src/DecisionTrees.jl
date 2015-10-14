@@ -1,6 +1,6 @@
 module DecisionTrees
 
-using MacroTools, Data
+using MacroTools, Data, Lazy
 
 include("impurity.jl")
 include("tree.jl")

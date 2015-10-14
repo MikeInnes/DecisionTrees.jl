@@ -61,7 +61,7 @@ function split(data::DataSet, x, z)
   return data[left], data[right]
 end
 
-immutable Branch
+@defonce immutable Branch
   col::Symbol
   val
   left::Nullable{Branch}
