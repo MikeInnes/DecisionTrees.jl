@@ -45,7 +45,7 @@ function bestsplit(xs::AbstractVector, ys::AbstractVector)
   return best, imp
 end
 
-function bestsplit(data::DataSet, y)
+function bestsplit(data::Table, y)
   ys = data[y]
   col, z, score = nothing, nothing, -Inf
   for name in names(data)
@@ -56,7 +56,7 @@ function bestsplit(data::DataSet, y)
   return col, z, score
 end
 
-function split(data::DataSet, x, z)
+function split(data::Table, x, z)
   left, right = split(data[x], z)
   return data[left], data[right]
 end
@@ -96,16 +96,16 @@ function tree(data, y)
   return Leaf(final(data[y]))
 end
 
-function classify(data::DataSet, tree::Branch, row::Integer)
+function classify(data::Table, tree::Branch, row::Integer)
   isleaf(tree) && return tree.val
   next = isleft(data[tree.col, row], tree.val) ? left(tree) : right(tree)
-  return classify(data::DataSet, next, row)
+  return classify(data::Table, next, row)
 end
 
-classify(data::DataSet, tree::Branch) =
+classify(data::Table, tree::Branch) =
   map(row -> classify(data, tree, row), 1:length(data))
 
-function accuracy(data::DataSet, y, tree::Branch)
+function accuracy(data::Table, y, tree::Branch)
   labels = classify(data, tree)
   ys = data[y]
   sum(ys .== labels) / length(labels)
