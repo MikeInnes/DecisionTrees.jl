@@ -34,7 +34,7 @@ groups(i, n = 10) = (g = i/(n+1); [round(Int, x) for x in g:g:n*g])
 
 splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
 
-function bestsplit(xs, ys)
+function bestsplit(xs::AbstractVector, ys::AbstractVector)
   best, imp = first(xs), -Inf
   for x in splitters(xs)
     if (i = score(xs, ys, x)) > imp

@@ -18,3 +18,29 @@ function pcat(xs::PooledVector)
   end
   return scale!(counts, 1/length(xs))
 end
+
+function score_inner!(xs, ys::PooledVector, z, left, right)
+  for i = 1:length(xs)
+    @inbounds (isleft(xs[i], z) ? left : right)[ys.data[i]] += 1
+  end
+end
+
+function score_inner!(xs::PooledVector, ys::PooledVector, z, left, right)
+  nx = length(unique(xs))
+  lefts = Array(Bool, nx)
+  for i = 1:nx
+    lefts[i] = isleft(unique(xs)[i], z)
+  end
+  for i = 1:length(xs)
+    @inbounds (lefts[xs.data[i]] ? left : right)[ys.data[i]] += 1
+  end
+end
+
+function score(xs, ys::PooledVector, z)
+  left, right = zeros(length(unique(ys))), zeros(length(unique(ys)))
+  score_inner!(xs, ys, z, left, right)
+  n, nleft, nright = length(ys), sum(left), sum(right)
+  pleft, pright = nleft/n, nright/n
+  scale!(left, 1/nleft); scale!(right, 1/nright)
+  return orig - pleft*gini(left) - pright*gini(right)
+end
