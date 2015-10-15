@@ -38,11 +38,12 @@ function score_inner!(xs::Pooled, ys::Pooled, z, left, right)
   end
 end
 
-function score(xs, ys::Pooled, z)
+function score(xs, ys::Pooled, z;
+               orig = gini(pcat(ys)))
   left, right = zeros(length(names(ys))), zeros(length(names(ys)))
   score_inner!(xs, ys, z, left, right)
   n, nleft, nright = length(ys), sum(left), sum(right)
   pleft, pright = nleft/n, nright/n
   scale!(left, 1/nleft); scale!(right, 1/nright)
-  return gini(pcat(ys)) - pleft*gini(left) - pright*gini(right)
+  return orig - pleft*gini(left) - pright*gini(right)
 end

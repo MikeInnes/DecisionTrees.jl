@@ -21,7 +21,7 @@ end
 
 split(xs, z) = split(xs, 1:length(xs), z)::NTuple{2, Vector{Int}}
 
-function score(xs, ys, z)
+function score(xs, ys, z; orig = nothing)
   left, right = split(xs, ys, z)
   improvement(ys, left, right)
 end
@@ -36,8 +36,9 @@ splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
 
 function bestsplit(xs::AbstractVector, ys::AbstractVector)
   best, imp = first(xs), -Inf
+  orig = gini(pcat(ys))
   for x in splitters(xs)
-    if (i = score(xs, ys, x)) > imp
+    if (i = score(xs, ys, x, orig = orig)) > imp
       best = x
       imp = i
     end
