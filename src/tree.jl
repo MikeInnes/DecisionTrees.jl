@@ -30,7 +30,7 @@ splitters(xs) = splitters(vareltype(xs), xs)
 
 splitters(::Categorical, xs) = unique(xs)
 
-groups(i, n = 10) = (g = i/(n+1); [round(Int, x) for x in g:g:n*g])
+groups(i, n = 10) = i ≤ n ? collect(1:i) : (g = i/(n+1); [round(Int, x) for x in g:g:n*g])
 
 splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
 
