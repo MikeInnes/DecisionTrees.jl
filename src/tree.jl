@@ -59,7 +59,7 @@ end
 
 function split(data::Table, x, z)
   left, right = split(data[x], z)
-  return data[left], data[right]
+  view(data, left), view(data, right)
 end
 
 @defonce immutable Branch
