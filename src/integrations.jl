@@ -16,18 +16,18 @@ function pcat(xs::PooledVector)
 end
 
 function score_inner!(xs, ys::PooledVector, z, left, right)
-  for i = 1:length(xs)
-    @inbounds (isleft(xs[i], z) ? left : right)[ys.data[i]] += 1
+  @fastmath @inbounds @simd for i = 1:length(xs)
+    (isleft(xs[i], z) ? left : right)[ys.data[i]] += 1
   end
 end
 
 function score_inner!(xs::PooledVector, ys::PooledVector, z, left, right)
   lefts = Array(Bool, length(names(xs)))
-  for i = 1:length(names(xs))
+  @fastmath @inbounds @simd for i = 1:length(names(xs))
     lefts[i] = isleft(names(xs)[i], z)
   end
-  for i = 1:length(xs)
-    @inbounds (lefts[xs.data[i]] ? left : right)[ys.data[i]] += 1
+  @fastmath @inbounds @simd for i = 1:length(xs)
+    (lefts[xs.data[i]] ? left : right)[ys.data[i]] += 1
   end
 end
 
