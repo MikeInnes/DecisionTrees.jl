@@ -110,5 +110,3 @@ function accuracy(data::DataSet, y, tree::Branch)
   ys = data[y]
   sum(ys .== labels) / length(labels)
 end
-
-depth(b::Branch) = isleaf(b) ? 1 : 1 + max(depth(left(b)), depth(right(b)))

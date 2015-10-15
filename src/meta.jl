@@ -47,3 +47,14 @@ function humanify(ex)
     end
   end
 end
+
+function addwidths!(xs, ys)
+  length(xs) < length(ys) && return addwidths!(ys, xs)
+  for i = 1:length(ys)
+    xs[i] += ys[i]
+  end
+  return xs
+end
+
+Base.size(b::Branch) =
+  isleaf(b) ? [1] : [1, addwidths!(size(left(b)), size(right(b)))...]
