@@ -22,7 +22,8 @@ function score_inner!(xs, ys::PooledVector, z, left, right)
 end
 
 function score_inner!(xs::PooledVector, ys::PooledVector, z, left, right)
-  lefts = Array(Bool, length(names(xs)))
+  lefts = @static Array(Bool, length(names(xs)))
+  fill!(lefts, false)
   @fastmath @inbounds @simd for i = 1:length(names(xs))
     lefts[i] = isleft(names(xs)[i], z)
   end
@@ -33,7 +34,8 @@ end
 
 function score(xs, ys::PooledVector, z;
                orig = gini(pcat(ys)))
-  left, right = zeros(length(names(ys))), zeros(length(names(ys)))
+  left  = @static zeros(length(names(ys)))
+  right = @static zeros(length(names(ys)))
   score_inner!(xs, ys, z, left, right)
   n, nleft, nright = length(ys), sum(left), sum(right)
   pleft, pright = nleft/n, nright/n
