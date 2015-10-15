@@ -17,7 +17,7 @@ end
 
 function score_inner!(xs, ys::PooledVector, z, left, right)
   for i = 1:length(xs)
-    @fastmath @inbounds lefts[xs.data[i]] ? left[ys.data[i]] += 1 : right[ys.data[i]] += 1
+    @fastmath @inbounds isleft(xs[i], z) ? left[ys.data[i]] += 1 : right[ys.data[i]] += 1
   end
 end
 
