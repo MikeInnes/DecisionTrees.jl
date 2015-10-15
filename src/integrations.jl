@@ -38,5 +38,5 @@ function score(xs, ys::PooledVector, z)
   n, nleft, nright = length(ys), sum(left), sum(right)
   pleft, pright = nleft/n, nright/n
   scale!(left, 1/nleft); scale!(right, 1/nright)
-  return orig - pleft*gini(left) - pright*gini(right)
+  return gini(pcat(ys)) - pleft*gini(left) - pright*gini(right)
 end
