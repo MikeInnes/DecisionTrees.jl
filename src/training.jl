@@ -78,7 +78,7 @@ Leaf(val) = Branch(leaf, val, nothing, nothing)
 
 isleaf(b::Branch) = b.col == leaf
 
-isstop(ys) = length(ys) ≤ 100
+isstop(ys) = length(ys) ≤ 10
 
 final(xs) = final(vareltype(xs), xs)
 
@@ -95,10 +95,4 @@ function tree(data, y)
 
   @label leaf
   return Leaf(final(data[y]))
-end
-
-function classify(tree::Branch, data::Table, row::Integer)
-  isleaf(tree) && return tree.val
-  next = isleft(data[tree.col, row], tree.val) ? left(tree) : right(tree)
-  return classify(data::Table, next, row)
 end
