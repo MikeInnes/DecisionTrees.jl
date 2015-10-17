@@ -97,17 +97,8 @@ function tree(data, y)
   return Leaf(final(data[y]))
 end
 
-function classify(data::Table, tree::Branch, row::Integer)
+function classify(tree::Branch, data::Table, row::Integer)
   isleaf(tree) && return tree.val
   next = isleft(data[tree.col, row], tree.val) ? left(tree) : right(tree)
   return classify(data::Table, next, row)
-end
-
-classify(data::Table, tree::Branch) =
-  map(row -> classify(data, tree, row), 1:length(data))
-
-function accuracy(data::Table, y, tree::Branch)
-  labels = classify(data, tree)
-  ys = data[y]
-  sum(ys .== labels) / length(labels)
 end

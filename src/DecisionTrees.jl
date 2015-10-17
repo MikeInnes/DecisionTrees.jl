@@ -6,6 +6,9 @@ include("impurity.jl")
 include("training.jl")
 include("tree.jl")
 
+include("forests/bagging.jl")
+include("forests/forests.jl")
+
 include("integrations.jl")
 include("meta.jl")
 
