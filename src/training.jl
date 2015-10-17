@@ -36,7 +36,7 @@ splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
 
 function bestsplit(xs::AbstractVector, ys::AbstractVector)
   best, imp = first(xs), -Inf
-  orig = gini(pcat(ys))
+  orig = score(ys)
   for x in splitters(xs)
     if (i = score(xs, ys, x, orig = orig)) > imp
       best = x

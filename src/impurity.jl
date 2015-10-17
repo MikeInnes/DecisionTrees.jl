@@ -20,7 +20,7 @@ end
 
 gini(ps) = @sumby(p -> p(1-p), ps)
 
-entropy(ps) = -@sumby(p -> p*log(p), ps)
+entropy(ps) = -@sumby(p -> p*log2(p), ps)
 
 function variance(xs)
   sum = 0.

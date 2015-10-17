@@ -33,7 +33,7 @@ function score_inner!(xs::PooledVector, ys::PooledVector, z, left, right)
 end
 
 function score(xs, ys::PooledVector, z;
-               orig = gini(pcat(ys)))
+               orig = score(ys))
   left  = @static zeros(length(names(ys)))
   right = @static zeros(length(names(ys)))
   score_inner!(xs, ys, z, left, right)
