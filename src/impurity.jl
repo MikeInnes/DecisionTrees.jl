@@ -40,8 +40,9 @@ score(::Continuous, ys) = variance(ys)
 improvement(ys, left, right) = improvement(vareltype(ys), ys, left, right)
 
 function improvement(vt::Categorical, ys, left, right)
-  pleft = length(left)/length(ys)
-  pright = length(right)/length(ys)
+  n, nleft, nright = length(ys), sum(left), sum(right)
+  (nleft ≤ 10 || nright ≤ 10) && return 0.
+  pleft, pright = nleft/n, nright/n
   return score(vt, ys) - pleft*score(vt, left) - pright*score(vt, right)
 end
 
