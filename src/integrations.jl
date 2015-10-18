@@ -34,12 +34,14 @@ end
 
 function score(xs, ys::PooledVector, z;
                orig = score(ys))
-  left  = @static zeros(length(names(ys)))
-  right = @static zeros(length(names(ys)))
-  score_inner!(xs, ys, z, left, right)
-  n, nleft, nright = length(ys), sum(left), sum(right)
-  (nleft ≤ 10 || nright ≤ 10) && return 0.
-  pleft, pright = nleft/n, nright/n
-  scale!(left, 1/nleft); scale!(right, 1/nright)
-  return orig - pleft*gini(left) - pright*gini(right)
+  @fastmath begin
+    left  = @static zeros(length(names(ys)))
+    right = @static zeros(length(names(ys)))
+    score_inner!(xs, ys, z, left, right)
+    n, nleft, nright = length(ys), sum(left), sum(right)
+    (nleft ≤ 10 || nright ≤ 10) && return 0.
+    pleft, pright = nleft/n, nright/n
+    scale!(left, 1/nleft); scale!(right, 1/nright)
+    return orig - pleft*gini(left) - pright*gini(right)
+  end
 end
