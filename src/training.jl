@@ -30,9 +30,9 @@ splitters(xs) = splitters(vareltype(xs), xs)
 
 splitters(::Categorical, xs) = unique(xs)
 
-groups(i, n = 10) = i ≤ n ? collect(1:i) : (g = i/(n+1); [round(Int, x) for x in g:g:n*g])
+groups(i, n = 10) = i ≤ n ? collect(1:i) : (g = (i-1)/(n-1); [round(Int, x) for x in 1:g:i])
 
-splitters(::Continuous, xs) = sort(xs)[groups(length(xs))]
+splitters(::Continuous, xs) = slice(xs, groups(length(xs)))
 
 function bestsplit(xs::AbstractVector, ys::AbstractVector)
   best, imp = first(xs), -Inf
