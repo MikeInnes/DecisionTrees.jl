@@ -24,7 +24,7 @@ end
 function score_inner!(xs::PooledVector, ys::PooledVector, z, left, right)
   lefts = @static Array(Bool, length(names(xs)))
   fill!(lefts, false)
-  @fastmath @inbounds @simd for i = 1:length(names(xs))
+  @fastmath @inbounds for i = 1:length(names(xs))
     lefts[i] = isleft(names(xs)[i], z)
   end
   for i = 1:length(xs)
