@@ -1,3 +1,5 @@
+export Bagger
+
 typealias AFloat AbstractFloat
 
 immutable Bagger{NC, NR}
@@ -5,7 +7,7 @@ immutable Bagger{NC, NR}
   rows::NR
 end
 
-Bagger() = Bagger(sqrt, n->0.1n)
+Bagger() = Bagger(sqrt, identity)
 
 bag(cols::Vector{Symbol}, n′::Integer) =
   sample(cols, n′, replace = false, ordered = true)
