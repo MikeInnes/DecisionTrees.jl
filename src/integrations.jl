@@ -7,6 +7,8 @@ isleft(::Continuous, x::Nullable, z::Nullable) =
 
 # Pooled Data
 
+import Data: @static
+
 function pcat(xs::PooledVector)
   counts = zeros(length(names(xs)))
   for x in xs.data
