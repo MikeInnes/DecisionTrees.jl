@@ -28,7 +28,11 @@ end
 
 splitrange(n, p = 0.7) = 1:round(Int, n*p), round(Int, n*p)+1:n
 
+Base.shuffle(data::DataSet) =
+  view(data, shuffle!(collect(1:length(data))))
+
 function class_act(model, data, y)
+  data = shuffle(data)
   trainrange, testrange = splitrange(length(data))
   traind, testd = data[trainrange], data[testrange]
   model = train(model, traind, y)
