@@ -1,15 +1,9 @@
-using RDatasets
+using DataFrames
 
-data = dataset("datasets", "iris")
-data = DataSet(data)
+data = DataSet(readtable("/Users/mike/Downloads/adult.csv"))
 
-splitrange(n, p = 0.7) = 1:round(Int, n*p), round(Int, n*p)+1:n
+@time class_act(DecisionTree(), data, :Earnings)
 
-function class_act(data, y)
-  trainrange, testrange = splitrange(length(data))
-  train, test = data[trainrange], data[testrange]
-  t = tree(train, y)
-  accuracy(test, y, t)
-end
+@time class_act(Forest(DecisionTree()), data, :Earnings)
 
-class_act(data, :Species)
+@time class_act(Forest(Forest(DecisionTree())), data, :Earnings)
